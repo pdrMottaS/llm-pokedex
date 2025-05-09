@@ -10,18 +10,18 @@ def get_pokemon(name:str):
             "nome": data["name"].title(),
             "altura": data["height"] / 10,
             "peso": data["weight"] / 10,
-            "tipos": [t["type"]["name"] for t in data["types"]]
+            "tipos": [t["type"]["name"] for t in data["types"]],
+            "especie": data['species']['url'].strip('/').split('/')[-1]
         }
     return {"erro": "Pokémon não encontrado"}
 
-def get_species(name:str):
-    response = requests.get(f"{BASE_URL}/pokemon-species/{name.lower()}")
+def get_type(name:str):
+    response = requests.get(f"{BASE_URL}/type/{name.lower()}")
     if response.status_code == 200:
         data = response.json()
-        flavor = next((entry for entry in data["flavor_text_entries"]
-                       if entry["language"]["name"] == "pt"), None)
         return {
-            "nome": data["name"].title(),
-            "descricao": flavor["flavor_text"] if flavor else "Descrição não encontrada"
+            "nome": data['name'],
+            "pokemons": [t['pokemon']['name'] for t in data['pokemon']],
+            "moves":[t['name'] for t in data['moves']]
         }
-    return {"erro": "Espécie não encontrada"}
+    return {"erro": "Tipo não encontrada"}
